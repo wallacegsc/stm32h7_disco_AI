@@ -1,0 +1,4 @@
+../Core/Inc/sys.h:10:11:constexpr sys::Serial::Serial()	1
+../Core/Inc/sys.h:20:18:sys::UartSerial::UartSerial(UART_HandleTypeDef&)	1
+../Core/Inc/sys.h:41:18:sys::Logger::Logger(sys::Serial&)	1
+../Core/Src/app.cpp:7:17:void app_main()	1
