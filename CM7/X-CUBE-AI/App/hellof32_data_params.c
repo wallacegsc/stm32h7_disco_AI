@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    hello_world_model_data_params.c
+  * @file    hellof32_data_params.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    2026-07-22T13:56:33-0400
+  * @date    2026-07-24T14:33:42-0400
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * Copyright (c) 2026 STMicroelectronics.
@@ -14,11 +14,11 @@
   ******************************************************************************
   */
 
-#include "hello_world_model_data_params.h"
+#include "hellof32_data_params.h"
 
 
 /**  Activations Section  ****************************************************/
-ai_handle g_hello_world_model_activations_table[1 + 2] = {
+ai_handle g_hellof32_activations_table[1 + 2] = {
   AI_HANDLE_PTR(AI_MAGIC_MARKER),
   AI_HANDLE_PTR(NULL),
   AI_HANDLE_PTR(AI_MAGIC_MARKER),
@@ -29,7 +29,7 @@ ai_handle g_hello_world_model_activations_table[1 + 2] = {
 
 /**  Weights Section  ********************************************************/
 AI_ALIGNED(32)
-const ai_u64 s_hello_world_model_weights_array_u64[161] = {
+const ai_u64 s_hellof32_weights_array_u64[161] = {
   0xbec930bbbdf97730U, 0x3f3214523e48f545U, 0xbd83e1e03e12cc64U, 0xbd5ed010be3889ecU,
   0x3ecfa6d3beec7f36U, 0xbf039eff3e8f2b42U, 0x3f2027bcbed788f0U, 0xbea9a330bebfa552U,
   0x0U, 0xbf38dff83ec1de99U, 0x3f5b8f323dba429dU, 0x0U,
@@ -74,9 +74,9 @@ const ai_u64 s_hello_world_model_weights_array_u64[161] = {
 };
 
 
-ai_handle g_hello_world_model_weights_table[1 + 2] = {
+ai_handle g_hellof32_weights_table[1 + 2] = {
   AI_HANDLE_PTR(AI_MAGIC_MARKER),
-  AI_HANDLE_PTR(s_hello_world_model_weights_array_u64),
+  AI_HANDLE_PTR(s_hellof32_weights_array_u64),
   AI_HANDLE_PTR(AI_MAGIC_MARKER),
 };
 

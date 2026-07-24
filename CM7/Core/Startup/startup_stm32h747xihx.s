@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32h745xx.s
+  * @file      startup_stm32h747xx.s
   * @author    MCD Application Team
-  * @brief     STM32H745xx Devices vector table for GCC based toolchain.
+  * @brief     STM32H747xx Devices vector table for GCC based toolchain.
   *            This module performs:
   *                - Set the initial SP
   *                - Set the initial PC == Reset_Handler,
@@ -268,7 +268,7 @@ g_pfnVectors:
   .word     MDIOS_IRQHandler                  /* MDIOS global Interrupt      */
   .word     JPEG_IRQHandler                   /* JPEG global Interrupt       */
   .word     MDMA_IRQHandler                   /* MDMA global Interrupt       */
-  .word     0                                 /* Reserved                   */
+  .word     DSI_IRQHandler                    /* DSI global Interrupt        */
   .word     SDMMC2_IRQHandler                 /* SDMMC2 global Interrupt     */
   .word     HSEM1_IRQHandler                  /* HSEM1 global Interrupt      */
   .word     HSEM2_IRQHandler                  /* HSEM1 global Interrupt      */
@@ -688,6 +688,9 @@ g_pfnVectors:
 
    .weak      MDMA_IRQHandler
    .thumb_set MDMA_IRQHandler,Default_Handler
+
+   .weak      DSI_IRQHandler
+   .thumb_set DSI_IRQHandler,Default_Handler
 
    .weak      SDMMC2_IRQHandler
    .thumb_set SDMMC2_IRQHandler,Default_Handler
