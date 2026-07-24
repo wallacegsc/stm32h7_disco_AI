@@ -7,7 +7,6 @@
 #include "model.h"
 #include "model_params.h"
 
-#include <cmath>
 
 extern "C" void app_main(void)
 {
@@ -40,10 +39,10 @@ extern "C" void app_main(void)
     float* input_tensor  = (float*) model.get_input_tensor();
     float* output_tensor = (float*) model.get_output_tensor();
 
-    float x = 0.0f;
 
     while (true) {
-        float x_model = std::fmod(x, 3.14f);
+        for(float x_model = 0; x_model < 3.0f ;x_model += 0.10f)
+        {
 
         // modelo float
         input_tensor[0] = x_model;
@@ -57,7 +56,8 @@ extern "C" void app_main(void)
         bool ok_q = (modelQ.run() == 0);
         if (ok_q) modelQ.dequantize_output(&y_quant, 1);
 
-        float y_real = std::sin(x_model);
+        // float y_real = std::sin(x_model);
+        float y_real = 0;
 
         if (ok_f && ok_q) {
             log.log_info("x=%.3f  real=%+.4f  f32=%+.4f (%+.4f)  int8=%+.4f (%+.4f)",
@@ -68,7 +68,7 @@ extern "C" void app_main(void)
             log.log_error("Inference fail: f32=%d int8=%d", ok_f, ok_q);
         }
 
-        x += 0.10f;
         sys::delay(200);
+        }
     }
 }
