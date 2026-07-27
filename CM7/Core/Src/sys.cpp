@@ -2,7 +2,14 @@
 
 #include "stm32h7xx_hal.h"
 #include <stdio.h>
-#include <cstdarg> 
+#include <cstdarg>
+#include <type_traits>
+
+#include "model.h"
+#include "model_params.h"
+
+#include <cmath>
+
 
 namespace sys {
     void delay(uint32_t ms){ HAL_Delay(ms);}
