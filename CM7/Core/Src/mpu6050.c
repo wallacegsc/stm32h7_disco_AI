@@ -745,31 +745,31 @@ void MPU6050_Read_All(MPU6050_t *DataStruct)
   DataStruct->Ay = DataStruct->Accel_Y_RAW / (mpu6050_config.accel_sensitivity);
   DataStruct->Az = DataStruct->Accel_Z_RAW / (mpu6050_config.accel_sensitivity);
 
-  temp = (uint16_t) (Rx_Data[6] << 8 | Rx_Data[7]);
-  DataStruct->Temperature = (float) ((uint16_t) temp / (float) 340.0 + (float) 36.53);
+  // temp = (uint16_t) (Rx_Data[6] << 8 | Rx_Data[7]);
+  // DataStruct->Temperature = (float) ((uint16_t) temp / (float) 340.0 + (float) 36.53);
 
-  // Kalman angle solve
-  double dt = (double) (HAL_GetTick() - timer) / 1000;
-  timer = HAL_GetTick();
-  double roll;
-  double roll_sqrt = sqrt(
-	  DataStruct->Accel_X_RAW * DataStruct->Accel_X_RAW + DataStruct->Accel_Z_RAW * DataStruct->Accel_Z_RAW);
-  if (roll_sqrt != 0.0) {
-      roll = atan(DataStruct->Accel_Y_RAW / roll_sqrt) * RAD_TO_DEG;
-  } else {
-      roll = 0.0;
-  }
-  double pitch = atan2(-DataStruct->Accel_X_RAW, DataStruct->Accel_Z_RAW) * RAD_TO_DEG;
-  if ((pitch < -90 && DataStruct->KalmanAngleY > 90) || (pitch > 90 && DataStruct->KalmanAngleY < -90)) {
-      KalmanY.angle = pitch;
-      DataStruct->KalmanAngleY = pitch;
-  } else {
-      DataStruct->KalmanAngleY = Kalman_getAngle(&KalmanY, pitch, DataStruct->Gy, dt);
-  }
-  if (fabs(DataStruct->KalmanAngleY) > 90)
-      DataStruct->Gx = -DataStruct->Gx;
+  // // Kalman angle solve
+  // double dt = (double) (HAL_GetTick() - timer) / 1000;
+  // timer = HAL_GetTick();
+  // double roll;
+  // double roll_sqrt = sqrt(
+	//   DataStruct->Accel_X_RAW * DataStruct->Accel_X_RAW + DataStruct->Accel_Z_RAW * DataStruct->Accel_Z_RAW);
+  // if (roll_sqrt != 0.0) {
+  //     roll = atan(DataStruct->Accel_Y_RAW / roll_sqrt) * RAD_TO_DEG;
+  // } else {
+  //     roll = 0.0;
+  // }
+  // double pitch = atan2(-DataStruct->Accel_X_RAW, DataStruct->Accel_Z_RAW) * RAD_TO_DEG;
+  // if ((pitch < -90 && DataStruct->KalmanAngleY > 90) || (pitch > 90 && DataStruct->KalmanAngleY < -90)) {
+  //     KalmanY.angle = pitch;
+  //     DataStruct->KalmanAngleY = pitch;
+  // } else {
+  //     DataStruct->KalmanAngleY = Kalman_getAngle(&KalmanY, pitch, DataStruct->Gy, dt);
+  // }
+  // if (fabs(DataStruct->KalmanAngleY) > 90)
+  //     DataStruct->Gx = -DataStruct->Gx;
 
-  DataStruct->KalmanAngleX = Kalman_getAngle(&KalmanX, roll, DataStruct->Gy, dt);
+  // DataStruct->KalmanAngleX = Kalman_getAngle(&KalmanX, roll, DataStruct->Gy, dt);
 
 }
 
