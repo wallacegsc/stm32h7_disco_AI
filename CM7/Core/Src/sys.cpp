@@ -14,6 +14,10 @@
 namespace sys {
     void delay(uint32_t ms){ HAL_Delay(ms);}
 
+    uint32_t get_miliseconds()
+    {
+        return HAL_GetTick();
+    }
 
     int UartSerial::write_bytes(uint8_t* buffer, int len)
     {

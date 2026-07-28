@@ -6,7 +6,7 @@
 #include <cstdarg>
 namespace sys {
     void delay(uint32_t ms);
-
+    uint32_t get_miliseconds();
     class Serial{
     public:
         virtual int write_bytes(uint8_t* buffer, int len) = 0;

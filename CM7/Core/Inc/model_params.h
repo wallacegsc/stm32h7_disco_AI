@@ -1,5 +1,7 @@
-#ifndef MODEL_PARAMS_H
-#define MODEL_PARAMS_H
+#pragma once
+
+#include "project_config.h"
+#ifndef DISABLE_AI
 
 extern "C" {
 #include "ai_platform.h"
@@ -107,4 +109,4 @@ struct Helloi8 {
     }
 };
 
-#endif /* MODEL_PARAMS_H */
+#endif 

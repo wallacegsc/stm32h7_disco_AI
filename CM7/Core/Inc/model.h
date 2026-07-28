@@ -1,5 +1,7 @@
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
+
+#include "project_config.h"
+#ifndef DISABLE_AI
 
 #include <cstdint>
 #include <cstddef>
@@ -246,4 +248,4 @@ private:
     }
 };
 
-#endif /* MODEL_H */
+#endif
