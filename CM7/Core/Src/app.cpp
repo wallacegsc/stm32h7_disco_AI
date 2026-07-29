@@ -1,11 +1,12 @@
 // app.cpp
 #include "main.h"
 #include <cstdio>
-#include "sys.h"
+#include "sys.hpp"
+#include "serial.hpp"
 #include "usart.h"
 
-#include "model.h"
-#include "model_params.h"
+#include "model.hpp"
+#include "model_params.hpp"
 
 #include "mpu6050.h"
 
@@ -16,7 +17,8 @@ class MotionSensor{
 private:
     static constexpr int hz = 50; // Samples / second
     static constexpr int period = (int)1000/hz;
-    static constexpr std::size_t BATCH_SIZE = hz;    
+    static constexpr std::size_t BATCH_SIZE = hz;
+    bool inited = false;    
 
 public:
     MotionSensor(
@@ -39,6 +41,18 @@ public:
     1->Fail
     */
     uint8_t init()
+    {
+        if(inited) return 0;
+
+        uint8_t ret = MPU6050_Init(acc_config, gyr_config, rate_config);
+
+        if(ret == 0)
+            inited = true;
+
+        return ret;
+    }
+
+    uint8_t force_reinit()
     {
         return MPU6050_Init(acc_config, gyr_config, rate_config);
     }
@@ -82,32 +96,86 @@ private:
     }
 };
 
+UartSerial uart{huart1};
+LoggerSerial logger{uart};
+MenuSerial menu{uart};
+MotionSensor motion_sensor;
+
+extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART1) {
+        uart.on_rx_isr();
+    }
+}
+
+using OptionState = MenuSerial::OptionState;
+using MenuState   = MenuSerial::MenuState;
+
+OptionState motion_init(std::string_view args, MenuState menu_state)
+{
+    if (motion_sensor.init() != 0)
+        logger.log_error("Motion Sensor Init Fail");
+
+    return OptionState::Finish;
+}
+
+OptionState motion_get_batch(std::string_view args, MenuState menu_state)
+{
+    if (motion_sensor.init() != 0)
+        logger.log_error("Motion Sensor Init Fail");
+
+    for (auto& s : motion_sensor.get_batch_samples())
+        logger.log_info("Acc-> X:%+4.3f Y:%+4.3f Z:%+4.3f   Giro-> X:%+8.3f Y:%+8.3f Z:%+8.3f",
+                        s.Ax, s.Ay, s.Az, s.Gx, s.Gy, s.Gz);
+
+    return OptionState::Finish;
+}
+
+OptionState motion_get_samples(std::string_view args, MenuState menu_state)
+{
+    if(menu_state == MenuState::Stop)
+        return OptionState::Finish;
+    //loop
+    if (motion_sensor.init() != 0)
+        logger.log_error("Motion Sensor Init Fail");
+
+    MotionSensor::MotionData s = motion_sensor.get_sample();
+    logger.log_info("Acc-> X:%+4.3f Y:%+4.3f Z:%+4.3f   Giro-> X:%+8.3f Y:%+8.3f Z:%+8.3f",
+                    s.Ax, s.Ay, s.Az, s.Gx, s.Gy, s.Gz);
+    
+    sys::delay(200);
+            
+    return OptionState::Running;
+}
+
+
+MenuSerial::option ops[] = 
+{
+    {
+        .cmd  = "motion_init",
+        .help = "Initializes mpu6050",
+        .f    = &motion_init
+    },
+    {
+        .cmd  = "motion_get_batch",
+        .help = "Measures batch samples",
+        .f    = &motion_get_batch
+    },
+    {
+        .cmd  = "motion_get_samples",
+        .help = "Measures batch samples",
+        .f    = &motion_get_samples
+    },
+};
 
 extern "C" void app_main(void)
 {
-    sys::UartSerial uart{huart1};
-    sys::Logger log{uart};
 
-    MotionSensor motion_sensor;
-    
-    if ( motion_sensor.init() != 0)
+    for(MenuSerial::option op : ops)
+        menu.instance_option(op);
+
+    uart.start_rx();
+    while(1)
     {
-        log.log_error("Motion Sensor Init Fail");
-        return;
+        menu.run();
     }
-
-    while(true)
-    {
-        log.log_info("-------------------");
-        // 1 segundo bloqueado aqui, coletando 50 amostras
-        auto batch = motion_sensor.get_batch_samples();
-        for(auto& s: batch)
-        {
-            log.log_info("Acc-> X:%+4.3f Y:%+4.3f Z:%+4.3f   Giro-> X:%+8.3f Y:%+8.3f Z:%+8.3f",
-                s.Ax, s.Ay, s.Az,
-                s.Gx, s.Gy, s.Gz
-            );
-        }
-    }
-
 }

@@ -724,7 +724,7 @@ void MPU6050_Read_Temp(MPU6050_t *DataStruct)
 void MPU6050_Read_All(MPU6050_t *DataStruct)
 {
   uint8_t Rx_Data[14];
-  uint16_t temp;
+  // uint16_t temp;
 
   // Read 14 BYTES of data starting from ACCEL_XOUT_H register //
   i2c_MPU6050_read_reg(ACCEL_XOUT_H_REG, Rx_Data, 14);
