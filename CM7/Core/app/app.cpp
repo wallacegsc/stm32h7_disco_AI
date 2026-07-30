@@ -32,20 +32,6 @@ OptionState motion_init(std::string_view args, MenuState menu_state)
     return OptionState::Finish;
 }
 
-OptionState motion_get_batch(std::string_view args, MenuState menu_state)
-{
-    if (motion_sensor.init() != 0){
-        logger.log_error("Motion Sensor Init Fail");
-        return OptionState::Finish;
-    }
-
-    for (auto& s : motion_sensor.get_batch_samples())
-        logger.log_info("Acc-> X:%+4.3f Y:%+4.3f Z:%+4.3f   Giro-> X:%+8.3f Y:%+8.3f Z:%+8.3f",
-                        s.Ax, s.Ay, s.Az, s.Gx, s.Gy, s.Gz);
-
-    return OptionState::Finish;
-}
-
 OptionState motion_get_samples(std::string_view args, MenuState menu_state)
 {
     if(menu_state == MenuState::Stop)
@@ -65,6 +51,22 @@ OptionState motion_get_samples(std::string_view args, MenuState menu_state)
     return OptionState::Running;
 }
 
+OptionState motion_get_batch_csv(std::string_view args, MenuState menu_state)
+{
+    if (motion_sensor.init() != 0){
+        logger.log_error("Motion Sensor Init Fail");
+        return OptionState::Finish;
+    }
+
+    logger.log_raw("Csv Start <ax,ay,az,gx,gy,gz>\r\n");
+    for (auto& s : motion_sensor.get_batch_samples())
+        logger.log_raw("%+.4f,%+.4f,%+.4f,%+.4f,%+.4f,%+.4f\r\n",
+                       s.Ax, s.Ay, s.Az, s.Gx, s.Gy, s.Gz);
+    logger.log_raw("Csv End <ax,ay,az,gx,gy,gz>\r\n");
+
+    return OptionState::Finish;
+}
+
 MenuSerial::option ops[] = 
 {
     {
@@ -73,9 +75,9 @@ MenuSerial::option ops[] =
         .f    = &motion_init
     },
     {
-        .cmd  = "motion_get_batch",
-        .help = "Measures batch samples",
-        .f    = &motion_get_batch
+        .cmd  = "motion_get_batch_csv",
+        .help = "Batch samples as raw CSV (ax,ay,az,gx,gy,gz)",
+        .f    = &motion_get_batch_csv
     },
     {
         .cmd  = "motion_get_samples",
@@ -83,7 +85,6 @@ MenuSerial::option ops[] =
         .f    = &motion_get_samples
     },
 };
-
 extern "C" void app_main(void)
 {
 

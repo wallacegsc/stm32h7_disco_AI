@@ -203,8 +203,8 @@ MenuSerial::OptionState MenuSerial::processing(std::string_view line)
     std::size_t sp = line.find(' ');
     std::string_view cmd  = line.substr(0, sp);
     std::string_view args = (sp == std::string_view::npos)
-                            ? std::string_view{}      // sem espaço → sem args
-                            : line.substr(sp + 1);    // tem espaço → resto após ele
+                            ? std::string_view{}     
+                            : line.substr(sp + 1);   
 
     writef("Cmd: %.*s | ", static_cast<int>(cmd.size()), cmd.data());
     if (args.empty())
@@ -216,17 +216,21 @@ MenuSerial::OptionState MenuSerial::processing(std::string_view line)
     bool find = false;
     if(cmd == "help")
     {
-        write("cmd list: \r\n");
-        write("----------\r\n");
+        write("\r\ncmd list:\r\n");
+        write("--------------------------------------------------\r\n");
         for (std::size_t i = 0; i < ops_num_; ++i)
         {
-            writef("%.*s %.*s\r\n", 
-                static_cast<int>(ops_[i].cmd.size()), ops_[i].cmd.data(),
-                static_cast<int>(ops_[i].help.size()), ops_[i].help.data()
-            );
-
+            constexpr std::size_t COL = 24;  
+            write("  ");
+            write(ops_[i].cmd);
+            std::size_t pad = (ops_[i].cmd.size() < COL)
+                            ? COL - ops_[i].cmd.size() : 1;
+            for (std::size_t p = 0; p < pad; ++p)
+                write(" ");
+            write(ops_[i].help);
+            write("\r\n");
         }
-        write("----------\r\n");
+        write("--------------------------------------------------\r\n");
         find = true;
     }
     else if(cmd == "clear"){
@@ -245,7 +249,6 @@ MenuSerial::OptionState MenuSerial::processing(std::string_view line)
             }
         }
     }
-
 
     if(!find)
         write("\n\rNot found (type: help)\r\n");
